@@ -1,0 +1,44 @@
+volumes:
+  postgres17_pgdata: 
+    driver: local
+    driver_opts:
+      o: bind
+      type: none
+      device: ./data/postgresql17-data
+
+  postgres17_dockerinit:
+    driver: local
+    driver_opts:
+      o: bind
+      type: none
+      device: ./configs/postgresql/17/docker-entrypoint-initdb.d
+
+secrets:
+  pg17-username:
+    file: ./configs/postgresql/17/.env.pg17-username
+  pg17-password:
+    file: ./configs/postgresql/17/.env.pg17-password
+  pg17-database:
+    file: ./configs/postgresql/17/.env.pg17-database
+
+services:
+  # https://hub.docker.com/_/postgres  
+  postgres17:
+    container_name: postgres17
+    image: postgres:17.2-alpine3.21
+    networks:
+      - monitoring
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB_FILE: /run/secrets/pg17-database
+      POSTGRES_USER_FILE: /run/secrets/pg17-username
+      POSTGRES_PASSWORD_FILE: /run/secrets/pg17-password
+    expose:
+      - "54321:5432"
+    volumes:
+      - postgres17_pgdata:/var/lib/postgresql/data
+      - postgres17_dockerinit:/docker-entrypoint-initdb.d
+    secrets:
+      - pg17-username
+      - pg17-password
+      - pg17-database

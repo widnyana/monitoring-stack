@@ -1,0 +1,24 @@
+name: sentinel
+
+volumes:
+  letsencrypt-data: 
+    driver: local
+    driver_opts:
+      o: bind
+      type: none
+      device: ./data/letsencrypt
+
+networks:
+  monitoring:
+    driver: bridge
+    driver_opts:
+      com.docker.network.driver.mtu: 1500
+      com.docker.network.bridge.enable_icc: "true"
+      com.docker.network.bridge.enable_ip_masquerade: "true"
+    ipam:
+      driver: default
+      config:
+        - subnet: 172.20.12.0/24
+          gateway: 172.20.12.1
+    labels:
+      com.docker.network.bridge.name: "monitoringbr0"

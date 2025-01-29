@@ -1,0 +1,26 @@
+services:  
+  nginx-proxy-manager:
+    container_name: nginx-proxy-manager
+    image: 'jc21/nginx-proxy-manager:2.12.2'
+    ports: 
+      - '80:80'
+      - '443:443'
+      - '1081:81'  # admin web port
+    restart: unless-stopped
+    environment:
+      DB_SQLITE_FILE: "/data/database.sqlite"
+      DISABLE_IPV6: 'true'
+      INITIAL_ADMIN_EMAIL: __NPM_INITIAL_ADMIN_EMAIL__
+      INITIAL_ADMIN_PASSWORD: __NPM_INITIAL_ADMIN_PASSWORD__
+      PUID: 1000
+      PGID: 1000
+      X_FRAME_OPTIONS: "sameorigin"
+    volumes:
+      - ./data/nginx-proxy-manager:/data
+      - ./data/letsencrypt:/etc/letsencrypt
+    networks:
+      - monitoring
+    healthcheck:
+      test: ["CMD", "/usr/bin/check-health"]
+      interval: 10s
+      timeout: 3s

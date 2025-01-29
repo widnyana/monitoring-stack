@@ -1,0 +1,10 @@
+services:
+  mktxp:
+    image: ghcr.io/akpw/mktxp:1.2.9
+    container_name: mon-mktxp
+    user: mktxp
+    volumes:
+      - "./configs/mktxp/:/home/mktxp/mktxp/"
+    networks:
+      - monitoring
+    restart: unless-stopped
